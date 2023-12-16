@@ -1,0 +1,112 @@
+1
+00:00:00,000 --> 00:00:05,400
+Docker, a tool that can package software into containers that run reliably in any environment.
+
+2
+00:00:05,400 --> 00:00:07,400
+But what does a container and why do you need one?
+
+3
+00:00:07,400 --> 00:00:10,900
+Let's imagine you built an app with Cobalt that runs on some weird flavor of Linux.
+
+4
+00:00:10,900 --> 00:00:13,900
+You want to share this app with your friend, but he has an entirely different system.
+
+5
+00:00:13,900 --> 00:00:18,100
+So the problem becomes, how do we replicate the environment our software needs on any machine?
+
+6
+00:00:18,100 --> 00:00:24,300
+One way to package an app is with a virtual machine, where the hardware is simulated, then installed with the required OS and dependencies.
+
+7
+00:00:24,300 --> 00:00:27,200
+This allows us to run multiple apps on the same infrastructure.
+
+8
+00:00:27,200 --> 00:00:32,200
+However, because each VM is running its own operating system, they tend to be bulky and slow.
+
+9
+00:00:32,200 --> 00:00:36,700
+Now, a Docker container is conceptually very similar to a VM with one key difference.
+
+10
+00:00:36,700 --> 00:00:40,400
+Instead of virtualizing hardware, containers only virtualize the OS.
+
+11
+00:00:40,400 --> 00:00:46,800
+Or in other words, all apps or containers are run by a single kernel, and this makes almost everything faster and more efficient.
+
+12
+00:00:46,800 --> 00:00:49,800
+There are three fundamental elements in the universe of Docker.
+
+13
+00:00:49,800 --> 00:00:52,800
+The Docker file, the image, and the container.
+
+14
+00:00:52,800 --> 00:00:54,600
+The Docker file is like DNA.
+
+15
+00:00:54,600 --> 00:01:00,200
+It's just code that tells Docker how to build an image, which itself is a snapshot of your software,
+
+16
+00:01:00,200 --> 00:01:03,200
+along with all of its dependencies down to the operating system level.
+
+17
+00:01:03,200 --> 00:01:09,400
+The image is immutable, and it can be used to spin up multiple containers, which is your actual software running in the real world.
+
+18
+00:01:09,400 --> 00:01:13,700
+Create a Docker file and use from to start from an existing template like Ubuntu.
+
+19
+00:01:13,700 --> 00:01:19,800
+This base image gets pulled down from the cloud, and you can also upload your own images to a variety of different Docker registries.
+
+20
+00:01:19,800 --> 00:01:24,400
+From there, you might want to use Run to run a terminal command that installs dependencies into your image.
+
+21
+00:01:24,400 --> 00:01:31,400
+You can set environment variables and do all kinds of other stuff, then the last thing you'll do is set a default command that's executed when you start up a container.
+
+22
+00:01:31,400 --> 00:01:34,800
+And now, we can create the image file by running the Docker build command.
+
+23
+00:01:34,800 --> 00:01:38,600
+It goes through each step in our Docker file to build the image layer by layer.
+
+24
+00:01:38,600 --> 00:01:42,600
+We can then bring this image to life as a container with the Docker Run command.
+
+25
+00:01:42,600 --> 00:01:49,200
+As your app demands more resources, you can run it on multiple machines, multiple clouds, on prem, or wherever you want reliably.
+
+26
+00:01:49,400 --> 00:01:51,400
+This has been Docker in 100 seconds.
+
+27
+00:01:51,400 --> 00:01:56,600
+If you enjoyed it, make sure to like and subscribe and stay tuned for more Docker content coming to this channel soon.
+
+28
+00:01:56,600 --> 00:01:59,400
+Thanks for watching, and I will see you in the next one.
+
