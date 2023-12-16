@@ -11,6 +11,7 @@ app = Flask(__name__)
 def transcribe_audio():
     data = request.json
     base64_audio = data.get("audio")
+    model_type = data.get("model_type", "tiny")
 
     if not base64_audio:
         return jsonify({"error": "No audio data provided"}), 400
@@ -26,7 +27,7 @@ def transcribe_audio():
     save_base64_audio(base64_audio, audio_file_path)
 
     try:
-        return_code = run_whisper(audio_file_path, dir_path)
+        return_code = run_whisper(audio_file_path, dir_path, model_type)
         srt_file_path = os.path.join(dir_path, 'audio.srt')
 
         if return_code == 0 and os.path.exists(srt_file_path):
@@ -48,4 +49,4 @@ def transcribe_audio():
             shutil.rmtree(dir_path)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3007, debug=True)
+    app.run(host='0.0.0.0', port=3000, debug=True)

@@ -4,7 +4,8 @@ import os
 import shutil
 import glob
 
-def run_whisper(file_name, output_directory):
+def run_whisper(file_name, output_directory, model_type):
+    print(f"MODEL_TYPE {model_type}")
     print(f"file_name {file_name}")
     start_time = time.time()
 
@@ -12,7 +13,7 @@ def run_whisper(file_name, output_directory):
     os.makedirs(output_directory, exist_ok=True)
 
     # Construct the command to execute Whisper
-    command = f'whisper "{file_name}" --model tiny'
+    command = f'whisper "{file_name}" --model {model_type}'
 
     # Get the current working directory
     cwd = os.getcwd()

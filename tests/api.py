@@ -13,7 +13,7 @@ def call_api_and_save_video(text_file_path):
     if text_for_json is None:
         return "File not found"
 
-    url = "http://3.238.98.134:3007/transcribe_audio"
+    url = "http://3.238.98.134:3000/transcribe_audio"
     headers = {"Content-Type": "application/json"}
     
     data = {"audio": text_for_json}
