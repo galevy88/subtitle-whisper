@@ -14,7 +14,7 @@ def convert_audio_to_base64_and_save(audio_file_path, output_txt_file):
         return False
 
 # Using the function to convert an audio file and save the result to a text file
-success = convert_audio_to_base64_and_save('audio.mp3', 'base64.txt')
+success = convert_audio_to_base64_and_save('linkin.mp3', 'linkin.txt')
 
 if success:
     print('The audio was successfully converted to base64 and saved to a text file.')

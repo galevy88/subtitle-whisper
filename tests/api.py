@@ -16,7 +16,8 @@ def call_api_and_save_video(text_file_path):
     url = "http://3.238.98.134:3000/transcribe_audio"
     headers = {"Content-Type": "application/json"}
     
-    data = {"audio": text_for_json}
+    data = {"audio": text_for_json,
+            "model_type": "small"}
     response = requests.put(url, json=data, headers=headers)
 
     if response.status_code == 200:

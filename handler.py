@@ -7,6 +7,11 @@ from whisperer import run_whisper
 
 app = Flask(__name__)
 
+
+@app.route('/health', methods=['GET'])
+def is_up():
+    return jsonify({'status': 'UP'})
+
 @app.route('/transcribe_audio', methods=['PUT'])
 def transcribe_audio():
     data = request.json
