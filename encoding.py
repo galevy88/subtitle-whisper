@@ -1,5 +1,4 @@
 import base64
-from flask import jsonify
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -9,7 +8,7 @@ warnings.filterwarnings("ignore")
 def encode_to_base64_response(video_path):
     with open(video_path, "rb") as video_file:
         encoded_string = base64.b64encode(video_file.read()).decode()
-    return jsonify({"base64_srt": encoded_string})
+    return {"base64_srt": encoded_string}
 
 
 def save_base64_audio(base64_data, file_path):

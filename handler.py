@@ -1,57 +1,78 @@
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import traceback
 import os
-import datetime
-import shutil  # Import shutil module
+from cloudwatch_logger import CloudWatchLogger as logger
+import shutil
 from encoding import encode_to_base64_response, save_base64_audio
 from whisperer import run_whisper
+from good_translator import translate_srt 
+import uuid
 
-app = Flask(__name__)
+app = FastAPI()
 
+class AudioData(BaseModel):
+    audio: str
+    model_type: str = "tiny"
+    lang: str = "en"
 
-@app.route('/health', methods=['GET'])
+@app.get("/health")
 def is_up():
-    return jsonify({'status': 'UP'})
+    return {"status": "UP"}
 
-@app.route('/transcribe_audio', methods=['PUT'])
-def transcribe_audio():
-    data = request.json
-    base64_audio = data.get("audio")
-    model_type = data.get("model_type", "tiny")
+@app.put("/transcribe_audio")
+def transcribe_audio(data: AudioData):
+    base64_audio = data.audio
+    model_type = data.model_type
+    target_lang = data.lang
+    logger.log(f"Start working on whisper with parameters: model_type {model_type} , target_lang {target_lang}")
 
     if not base64_audio:
-        return jsonify({"error": "No audio data provided"}), 400
+        raise HTTPException(status_code=400, detail="No audio data provided")
 
-    iat = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    uid = uuid.uuid4()
+    logger.log(f"UUID for user is: {uid}")
     base_path = os.getcwd()
-    dir_path = os.path.join(base_path, f'{iat}')
+    dir_path = os.path.join(base_path, f'{uid}')
     audio_file_path = os.path.join(dir_path, 'audio.mp3')
-
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
+    logger.log(f"Start save base64 audio to path: {audio_file_path}")
     save_base64_audio(base64_audio, audio_file_path)
+    logger.log(f"Finish save base64 audio to path: {audio_file_path}")
 
     try:
         return_code = run_whisper(audio_file_path, dir_path, model_type)
         srt_file_path = os.path.join(dir_path, 'audio.srt')
 
         if return_code == 0 and os.path.exists(srt_file_path):
-            data = encode_to_base64_response(srt_file_path)
-            return data
+            if target_lang != "en":
+                translated_srt_path = os.path.join(dir_path, f'audio_{target_lang}.srt')
+                translate_srt(srt_file_path, translated_srt_path, "en", target_lang)
+                srt_file_path = translated_srt_path
+
+            response_data = encode_to_base64_response(srt_file_path)
+            return response_data
         else:
-            return jsonify({"error": "Transcription failed or SRT file not found"}), 500
+            raise HTTPException(status_code=500, detail="Transcription failed or SRT file not found")
+        
+    except Exception as e:
+        print(f"Exception occurred: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+    
     finally:
         files_to_delete = ['audio.json', 'audio.txt', 'audio.tsv', 'audio.vtt']
 
-        # Delete the specified files if they exist
         for file_name in files_to_delete:
             file_path = os.path.join(base_path, file_name)
             if os.path.exists(file_path):
                 os.remove(file_path)
         
-        # Delete the IAT directory and everything inside it
         if os.path.exists(dir_path):
             shutil.rmtree(dir_path)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=3000)

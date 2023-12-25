@@ -21,7 +21,7 @@ def save_translated_srt(subs, output_file):
 # Example usage
 input_srt = 'tests/transcription_en.srt'  # Path to your input SRT file
 output_srt = 'tests/transcription_he_google.srt'  # Path for the translated SRT file
-target_language = 'he'  # Target language (Spanish in this example)
+target_language = 'it'  # Target language (Spanish in this example)
 
 translated_subs = translate_srt(input_srt, target_language)
 save_translated_srt(translated_subs, output_srt)
