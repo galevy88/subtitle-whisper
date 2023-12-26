@@ -13,6 +13,11 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+import argparse
+
+parser = argparse.ArgumentParser(description='Run FastAPI server.')
+parser.add_argument('--port', type=int, default=3000, help='Port to run the server on')
+args = parser.parse_args()
 
 app = FastAPI()
 
@@ -82,4 +87,4 @@ def transcribe_audio(data: AudioData):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3000)
+    uvicorn.run(app, host="0.0.0.0", port=args.port)
