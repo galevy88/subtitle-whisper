@@ -1,13 +1,15 @@
 import requests
 import pysrt
 import time
+import os
 from dotenv import load_dotenv
+from cloudwatch_logger import CloudWatchLogger as logger
 
 load_dotenv()
 
 
 def translate_text(text, source_lang, target_lang):
-    api_key = ''
+    api_key = os.getenv('RAPID_API_KEY')
     url = "https://google-translate113.p.rapidapi.com/api/v1/translator/text"
     payload = {
         "from": source_lang,
@@ -19,7 +21,7 @@ def translate_text(text, source_lang, target_lang):
         "X-RapidAPI-Key": api_key,
         "X-RapidAPI-Host": "google-translate113.p.rapidapi.com"
     }
-
+    logger.log(f"Sending post request to: {url}")
     response = requests.post(url, data=payload, headers=headers)
     return response.json()['trans']
 
@@ -31,14 +33,5 @@ def translate_srt(file_path, output_file, source_lang, target_lang):
         sub.text = translated_text
     subs.save(output_file, encoding='utf-8')
     end_time = time.time()
-    print(f"Time Taken For Google Translate: {end_time - start_time} seconds")
+    logger.log(f"Time Taken For Google Translate: {end_time - start_time} seconds")
 
-
-
-# Example usage
-# input_srt = 'tests/transcription_en.srt'  # Path to your input SRT file
-# output_srt = 'tests/transcription_es_good_translate.srt'  # Path for the translated SRT file
-# source_language = 'en'  # Source language
-# target_language = 'es'  # Target language (Hebrew in this example)
-
-# translate_srt(input_srt, output_srt, source_language, target_language)

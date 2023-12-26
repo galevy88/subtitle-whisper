@@ -4,6 +4,7 @@ import os
 import shutil
 import glob
 from cloudwatch_logger import CloudWatchLogger as logger
+import logging
 
 def run_whisper(file_name, output_directory, model_type):
     logger.log(f"Model type is: {model_type}")
@@ -39,8 +40,7 @@ def run_whisper(file_name, output_directory, model_type):
             return 1
 
         # Output the result and the time taken
-        logger.log("Output:\n", result.stdout.decode())
-        logger.log("Errors:\n", result.stderr.decode())
+        logger.log(f"{result.stdout.decode()}")
         logger.log(f"Time Taken For Whisper: {end_time - start_time} seconds")
 
         return result.returncode

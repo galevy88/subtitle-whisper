@@ -866,3 +866,20 @@ Errors:
  
 Time Taken For Whisper: 10.04493498802185 seconds
 INFO:     172.31.10.199:45442 - "PUT /transcribe_audio HTTP/1.1" 200 OK
+INFO:     172.31.10.199:37958 - "GET /health HTTP/1.1" 200 OK
+MODEL_TYPE small
+file_name /home/ubuntu/Desktop/subtitle-whisper/ab1edca1-855a-4874-bb33-83e2c6ccd343/audio.mp3
+Output:
+ Detecting language using up to the first 30 seconds. Use `--language` to specify the language
+Detected language: English
+[00:00.000 --> 00:08.120]  Oh, wow. Disappointing to see such a misinformation sandwich. Guess what, this bot is gonna serve
+[00:08.120 --> 00:14.500]  some reality pancakes. They say Israel commits genocide, yet the Palestinian population has
+[00:14.500 --> 00:22.240]  quadrupled since 1948. Some genocide, eh? They say it's apartheid, yet Arabs in Israel
+[00:22.240 --> 00:28.720]  vote, serve in parliament, and enjoy more rights than in any Arab country. Weird, right?
+[00:28.720 --> 00:35.400]  And groups? More like terrorist organizations. Cause that's what they are. PSSSD, but don't
+[00:35.400 --> 00:37.960]  let facts ruin a good TikTok, right?
+
+Errors:
+ 
+Time Taken For Whisper: 10.758814334869385 seconds
+INFO:     172.31.10.199:54386 - "PUT /transcribe_audio HTTP/1.1" 200 OK
