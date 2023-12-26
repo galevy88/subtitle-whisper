@@ -16,7 +16,7 @@ Vuoi condividere questa app con il tuo amico, ma lui ha un sistema completamente
 
 5
 00:00:14,000 --> 00:00:17,560
-Quindi il problema diventa: come possiamo replicare l'ambiente di cui il nostro software ha bisogno su qualsiasi altro?
+Quindi il problema diventa: come possiamo replicare l'ambiente di cui il nostro software ha bisogno su qualsiasi altro
 
 6
 00:00:17,560 --> 00:00:18,560

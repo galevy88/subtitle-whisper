@@ -7,9 +7,11 @@ from cloudwatch_logger import CloudWatchLogger as logger
 
 load_dotenv()
 
+from aws_secrets import get_secret
+api_key = get_secret('prod_fb_video_reels')
 
 def translate_text(text, source_lang, target_lang):
-    api_key = os.getenv('RAPID_API_KEY')
+
     url = "https://google-translate113.p.rapidapi.com/api/v1/translator/text"
     payload = {
         "from": source_lang,
@@ -21,8 +23,8 @@ def translate_text(text, source_lang, target_lang):
         "X-RapidAPI-Key": api_key,
         "X-RapidAPI-Host": "google-translate113.p.rapidapi.com"
     }
-    
-    response = requests.post(url, data=payload, headers=headers)
+
+    response = requests.post(url, data=payload, headers=headers, verify=False)
     translation=response.json()['trans']
     logger.log(f"Got translation for: {text}. The translation is: {translation}")
     return translation
