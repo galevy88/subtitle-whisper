@@ -8,7 +8,7 @@ import logging
 
 def run_whisper(file_name, output_directory, model_type):
     logger.log(f"Model type is: {model_type}")
-    logger.log(f"File name is: {model_type}")
+    logger.log(f"File name is: {file_name}")
     start_time = time.time()
 
     # Ensure the output directory exists
