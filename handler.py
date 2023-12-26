@@ -53,6 +53,7 @@ def transcribe_audio(data: AudioData):
 
         if return_code == 0 and os.path.exists(srt_file_path):
             if target_lang != "en":
+                logger.log("HERE")
                 translated_srt_path = os.path.join(dir_path, f'audio_{target_lang}.srt')
                 translate_srt(srt_file_path, translated_srt_path, "en", target_lang)
                 srt_file_path = translated_srt_path

@@ -21,9 +21,11 @@ def translate_text(text, source_lang, target_lang):
         "X-RapidAPI-Key": api_key,
         "X-RapidAPI-Host": "google-translate113.p.rapidapi.com"
     }
-    logger.log(f"Sending post request to: {url}")
+    
     response = requests.post(url, data=payload, headers=headers)
-    return response.json()['trans']
+    translation=response.json()['trans']
+    logger.log(f"Got translation for: {text}. The translation is: {translation}")
+    return translation
 
 def translate_srt(file_path, output_file, source_lang, target_lang):
     start_time = time.time()
