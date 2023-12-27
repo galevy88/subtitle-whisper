@@ -6,9 +6,9 @@ import glob
 from cloudwatch_logger import CloudWatchLogger as logger
 import logging
 
-def run_whisper(file_name, output_directory, model_type):
-    logger.log(f"Model type is: {model_type}")
-    logger.log(f"File name is: {file_name}")
+def run_whisper(file_name, output_directory, model_type, uid):
+    logger.log(f"Model type is: {model_type}", uid=uid)
+    logger.log(f"File name is: {file_name}", uid=uid)
     start_time = time.time()
 
     # Ensure the output directory exists
@@ -16,7 +16,7 @@ def run_whisper(file_name, output_directory, model_type):
 
     
     command = f'whisper "{file_name}" --model {model_type}'
-    logger.log(f"Start Executing command: {command}")
+    logger.log(f"Start Executing command: {command}", uid=uid)
 
     # Get the current working directory
     cwd = os.getcwd()
@@ -36,25 +36,17 @@ def run_whisper(file_name, output_directory, model_type):
             # Move the SRT file to the desired output directory
             shutil.move(srt_file_path, os.path.join(output_directory, os.path.basename(srt_file_path)))
         else:
-            logger.log("No SRT file found.")
+            logger.log("No SRT file found.", uid=uid)
             return 1
 
         # Output the result and the time taken
-        logger.log(f"{result.stdout.decode()}")
-        logger.log(f"Time Taken For Whisper: {end_time - start_time} seconds")
+        logger.log(f"{result.stdout.decode()}", uid=uid)
+        logger.log(f"Time Taken For Whisper: {end_time - start_time} seconds", uid=uid)
 
         return result.returncode
     except subprocess.CalledProcessError as e:
         # Handle the error
         end_time = time.time()
-        logger.log(f"An error occurred: {e}")
-        logger.log(f"Time Taken For Whisper: {end_time - start_time} seconds")
+        logger.log(f"An error occurred: {e}", uid=uid)
+        logger.log(f"Time Taken For Whisper: {end_time - start_time} seconds", uid=uid)
         return e.returncode
-
-if __name__ == '__main__':
-    output_directory = 'desired_output_directory'
-    return_code, output_file = run_whisper('docker.mp3', output_directory)
-    if return_code == 0 and output_file:
-        logger.log(f"Transcription successful. SRT output saved to: {output_file}")
-    else:
-        logger.log("Failed to transcribe audio or no SRT file generated.")

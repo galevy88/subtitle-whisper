@@ -1,5 +1,7 @@
 import requests
 import base64
+import uuid
+
 
 def read_text_from_file(file_path):
     try:
@@ -8,17 +10,26 @@ def read_text_from_file(file_path):
     except FileNotFoundError:
         return None
 
+
 def call_api_and_save_video(text_file_path):
     text_for_json = read_text_from_file(text_file_path)
     if text_for_json is None:
         return "File not found"
 
+    # Generate a unique identifier (uid)
+    uid = str(uuid.uuid4())
+
     url = "http://localhost:3000/transcribe_audio"
     headers = {"Content-Type": "application/json"}
-    
-    data = {"audio": text_for_json,
-            "model_type": "small",
-            "lang": "it"}
+
+    # Include the uid in the data payload
+    data = {
+        "audio": text_for_json,
+        "model_type": "small",
+        "lang": "it",
+        "uid": uid
+    }
+
     response = requests.put(url, json=data, headers=headers)
 
     if response.status_code == 200:
@@ -31,12 +42,13 @@ def call_api_and_save_video(text_file_path):
             srt_file_name = "transcription.srt"
             with open(srt_file_name, "wb") as file:
                 file.write(srt_content)
-            
+
             return f"SRT file saved as {srt_file_name}"
         else:
             return "No SRT data found in response"
     else:
         return f"Error: {response.status_code}"
+
 
 if __name__ == "__main__":
     result = call_api_and_save_video('base64.txt')

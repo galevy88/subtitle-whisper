@@ -11,22 +11,25 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class CloudWatchJsonFormatter(logging.Formatter):
     def format(self, record):
         log_record = {
             'timestamp': time.strftime("%Y-%m-%d %H:%M:%S"),
             'level': record.levelname,
             'location': record.location,
+            'uid': record.uid,
             'message': record.getMessage(),
             'memory_usage': f"{psutil.Process(os.getpid()).memory_info().rss / (1024 * 1024)} MB",
             'cpu_usage': f"{psutil.cpu_percent(interval=None)} %",
         }
         return json.dumps(log_record, indent=4)
 
+
 class CloudWatchLogger:
-    client = boto3.client('logs', 
-                          region_name=os.getenv('AWS_DEFAULT_REGION'), 
-                          aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'), 
+    client = boto3.client('logs',
+                          region_name=os.getenv('AWS_DEFAULT_REGION'),
+                          aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
                           aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     log_group = os.getenv('LOG_GROUP')
     sequence_token = None
@@ -44,17 +47,16 @@ class CloudWatchLogger:
         return ''.join(traceback.format_exception(None, e, e.__traceback__))
 
     @staticmethod
-    def log(message, level=logging.INFO):
-        if isinstance(message, Exception):
-            # Format the exception with its traceback
+    def log(message, uid, level=logging.INFO):
+        if level == logging.ERROR:
+            # Capture the current traceback
+            traceback_str = ''.join(traceback.format_stack())
+            # Append the traceback to the message
+            message = f"{message}\nTraceback (most recent call last):\n{traceback_str}"
+
+        # For messages that are instances of Exception, format them with their traceback
+        elif isinstance(message, Exception):
             message = CloudWatchLogger.format_exception(message)
-            level = logging.ERROR
-        elif isinstance(message, str) and message.startswith("Exception occurred:"):
-            # If the message is a string indicating an exception, format it with traceback
-            try:
-                raise Exception(message)
-            except Exception as e:
-                message = CloudWatchLogger.format_exception(e)
 
         # Generate log stream name based on the current date
         current_date = datetime.now().strftime("%Y-%m-%d")
@@ -66,7 +68,7 @@ class CloudWatchLogger:
         frame, filename, lineno, _, _, _ = inspect.stack()[1]
         location = f"{os.path.basename(filename)}:{lineno}"
 
-        CloudWatchLogger.logger.log(level, message, extra={'location': location})
+        CloudWatchLogger.logger.log(level, message, extra={'location': location, 'uid': uid})
 
         cw_formatter = CloudWatchJsonFormatter()
         record = CloudWatchLogger.logger.makeRecord(
@@ -77,7 +79,7 @@ class CloudWatchLogger:
             msg=message,
             args=None,
             exc_info=None,
-            extra={'location': location}
+            extra={'location': location, 'uid': uid}
         )
         json_log_message = cw_formatter.format(record)
 
@@ -101,7 +103,7 @@ class CloudWatchLogger:
                     logStreamName=log_stream,
                     logEvents=[log_event]
                 )
-            
+
             CloudWatchLogger.sequence_token = response.get('nextSequenceToken')
         except boto3.client('logs').exceptions.InvalidSequenceTokenException as e:
             CloudWatchLogger.sequence_token = e.response['Error']['Message'].split()[-1]
@@ -126,6 +128,7 @@ class CloudWatchLogger:
         except boto3.client('logs').exceptions.ResourceAlreadyExistsException:
             # Log stream already exists, no action needed
             pass
+
 
 # Example usage
 if __name__ == "__main__":

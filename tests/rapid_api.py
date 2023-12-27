@@ -7,7 +7,7 @@ load_dotenv()
 
 # Function to translate text using the Google Translate API
 def translate_text(text, source_lang, target_lang):
-    api_key = "536d405d53mshebfc39ec9e2c5c7p1e8489jsna23d14919022"
+    api_key = "XXX"
     url = "https://google-translate113.p.rapidapi.com/api/v1/translator/text"
     payload = {
         "from": source_lang,
