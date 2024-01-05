@@ -2,7 +2,6 @@ import requests
 import base64
 import uuid
 
-
 def read_text_from_file(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -10,22 +9,18 @@ def read_text_from_file(file_path):
     except FileNotFoundError:
         return None
 
-
-def call_api_and_save_video(text_file_path):
+def call_api_and_save_srt(text_file_path):
     text_for_json = read_text_from_file(text_file_path)
     if text_for_json is None:
         return "File not found"
 
-    # Generate a unique identifier (uid)
     uid = str(uuid.uuid4())
 
-    url = "http://localhost:3000/transcribe_audio"
+    url = "http://localhost:3005/transcribe_audio"
     headers = {"Content-Type": "application/json"}
-
-    # Include the uid in the data payload
     data = {
         "audio": text_for_json,
-        "model_type": "small",
+        "model_type": "tiny",
         "lang": "it",
         "uid": uid
     }
@@ -33,23 +28,26 @@ def call_api_and_save_video(text_file_path):
     response = requests.put(url, json=data, headers=headers)
 
     if response.status_code == 200:
-        base64_srt = response.json().get("base64_srt")
-        if base64_srt:
-            # Decoding the base64 string to get the SRT content
-            srt_content = base64.b64decode(base64_srt)
+        response_json = response.json()
+        original_srt_base64 = response_json.get("base64_srt")
+        translated_srt_base64 = response_json.get("base64_translated_srt")
 
-            # Writing the decoded content to an SRT file
-            srt_file_name = "transcription.srt"
-            with open(srt_file_name, "wb") as file:
-                file.write(srt_content)
+        if original_srt_base64:
+            original_srt_content = base64.b64decode(original_srt_base64)
+            original_srt_file_name = f"{uid}_original.srt"
+            with open(original_srt_file_name, "wb") as file:
+                file.write(original_srt_content)
 
-            return f"SRT file saved as {srt_file_name}"
-        else:
-            return "No SRT data found in response"
+        if translated_srt_base64:
+            translated_srt_content = base64.b64decode(translated_srt_base64)
+            translated_srt_file_name = f"{uid}_translated.srt"
+            with open(translated_srt_file_name, "wb") as file:
+                file.write(translated_srt_content)
+
+        return "SRT files saved" if original_srt_base64 or translated_srt_base64 else "No SRT data found in response"
     else:
         return f"Error: {response.status_code}"
 
-
 if __name__ == "__main__":
-    result = call_api_and_save_video('base64.txt')
+    result = call_api_and_save_srt('base64.txt')
     print(result)
