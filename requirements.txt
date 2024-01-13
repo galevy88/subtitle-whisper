@@ -5,3 +5,7 @@ torchvision==0.16.2
 openai-whisper
 fastapi==0.105.0
 uvicorn==0.25.0
+boto3==1.34.17
+psutil==5.9.0
+python-dotenv==1.0.0
+pysrt==1.1.2
