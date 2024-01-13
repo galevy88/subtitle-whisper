@@ -52,7 +52,7 @@ def transcribe_audio(data: AudioData):
         srt_file_path = os.path.join(dir_path, 'audio.srt')
 
         if return_code != 0 or not os.path.exists(srt_file_path):
-            raise HTTPException(status_code=500, detail="Transcription failed or SRT file not found")
+            raise HTTPException(status_code=500, detail="Transcription failed or SRT file not found!")
 
         response_data = {"base64_srt": encode_to_base64_response(srt_file_path)}
 
